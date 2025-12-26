@@ -21,6 +21,13 @@ interface Course {
   link: string;
 }
 
+interface Action {
+  id: string;
+  label: string;
+  type: 'tel' | 'mailto' | 'book' | 'brochure' | 'custom';
+  payload?: string;
+}
+
 const LeapfrogWebsite = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -28,6 +35,7 @@ const LeapfrogWebsite = () => {
   const [userData, setUserData] = useState<UserData>({ name: '', email: '', phone: '' });
   const [currentStep, setCurrentStep] = useState('welcome');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [actions, setActions] = useState<Action[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
@@ -135,7 +143,7 @@ const LeapfrogWebsite = () => {
       addUserMessage(value);
       addBotMessage(`Nice to meet you, ${value}! 😊\n\nCould you please share your email address?`);
       setCurrentStep('collectEmail');
-    } else if (currentStep === 'collectEmail') {
+    } else if (currentStep === 'collectEmail' || currentStep === 'collectEmailForBrochure') {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
         addBotMessage('Please enter a valid email address.');
@@ -143,27 +151,54 @@ const LeapfrogWebsite = () => {
       }
       setUserData(prev => ({ ...prev, email: value }));
       addUserMessage(value);
-      addBotMessage('Great! And finally, what\'s your phone number?');
-      setCurrentStep('collectPhone');
-    } else if (currentStep === 'collectPhone') {
+
+      // If we were collecting email as part of the onboarding flow
+      if (currentStep === 'collectEmail') {
+        addBotMessage('Great! And finally, what\'s your phone number?');
+        setCurrentStep('collectPhone');
+        return;
+      }
+
+      // If we were collecting email to send brochure
+      if (currentStep === 'collectEmailForBrochure') {
+        addBotMessage('Thanks — I\'ll send the brochure to your email shortly. 📧', 300);
+        // Optionally send a record to the sheet
+        await sendToGoogleSheet({ ...userData, email: value });
+        setTimeout(() => showMainMenu(), 1200);
+        return;
+      }
+    } else if (currentStep === 'collectPhone' || currentStep === 'collectPhoneForBooking') {
       const phoneRegex = /^[0-9+\-\s()]{10,}$/;
       if (!phoneRegex.test(value)) {
         addBotMessage('Please enter a valid phone number.');
         return;
       }
+
       const completeData = { ...userData, phone: value };
       setUserData(completeData);
       addUserMessage(value);
-      addBotMessage('Processing your information...', 100);
-      await sendToGoogleSheet(completeData);
-      showMainMenu();
+
+      if (currentStep === 'collectPhone') {
+        addBotMessage('Processing your information...', 100);
+        await sendToGoogleSheet(completeData);
+        showMainMenu();
+        return;
+      }
+
+      if (currentStep === 'collectPhoneForBooking') {
+        addBotMessage('Thanks — we will arrange a call/demo with our faculty. Our team will contact you shortly to confirm the slot. 📞', 300);
+        // Optionally send booking info to sheet
+        await sendToGoogleSheet(completeData);
+        setTimeout(() => showMainMenu(), 1500);
+        return;
+      }
     }
   };
 
   const showMainMenu = () => {
     setCurrentStep('mainMenu');
     addBotMessage(
-      `Perfect! Thank you for sharing your details. 🎉\n\nHow can I help you today?\n\n1️⃣ View all courses\n2️⃣ Ask about a specific course\n3️⃣ Contact information\n4️⃣ Speak with a human\n\nJust type the number or ask me anything!`,
+      `Perfect! Thank you for sharing your details. 🎉\n\nHow can I help you today?\n\n1️⃣ View all courses\n2️⃣ Ask about a specific course\n3️⃣ Contact information\n4️⃣ Speak with a human\n5️⃣ Book a call/demo with faculty\n6️⃣ Send me a brochure\n\nJust type the number or ask me anything!`,
       800
     );
   };
@@ -185,6 +220,20 @@ const LeapfrogWebsite = () => {
       addUserMessage(input);
       addBotMessage(`I'll connect you with our team!\n\n📞 ${contactInfo.phone[0]}\n✉️ ${contactInfo.email}`);
       setTimeout(() => showMainMenu(), 2000);
+    } else if (input === '5' || lowerInput.includes('book') || lowerInput.includes('demo') || lowerInput.includes('faculty')) {
+      addUserMessage(input);
+      // show actionable options: Book demo now or call directly
+      setActions([
+        { id: 'book', label: 'Book a Call / Demo', type: 'book' },
+        { id: 'callSupport', label: `Call ${contactInfo.phone[0]}`, type: 'tel', payload: contactInfo.phone[0] }
+      ]);
+    } else if (input === '6' || lowerInput.includes('brochure') || lowerInput.includes('pdf')) {
+      addUserMessage(input);
+      // show action to send brochure or ask for email
+      setActions([
+        { id: 'sendBrochure', label: 'Send Brochure', type: 'brochure' },
+        { id: 'email', label: `Email ${contactInfo.email}`, type: 'mailto', payload: contactInfo.email }
+      ]);
     } else if (lowerInput.includes('ux') || lowerInput.includes('ui') || lowerInput.includes('web') || 
                lowerInput.includes('graphic') || lowerInput.includes('branding') || lowerInput.includes('service')) {
       addUserMessage(input);
@@ -238,14 +287,66 @@ const LeapfrogWebsite = () => {
     addBotMessage(
       `📍 Address:\n${contactInfo.address}\n\n📞 Phone:\n${contactInfo.phone.join('\n')}\n\n✉️ Email:\n${contactInfo.email}`
     );
+    // show quick action buttons for contact
+    setActions([
+      { id: 'call', label: `Call ${contactInfo.phone[0]}`, type: 'tel', payload: contactInfo.phone[0] },
+      { id: 'email', label: `Email ${contactInfo.email}`, type: 'mailto', payload: contactInfo.email },
+      { id: 'visit', label: 'Open in Maps', type: 'custom', payload: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contactInfo.address)}` }
+    ]);
     setTimeout(() => showMainMenu(), 2000);
+  };
+
+  const handleAction = async (action: Action) => {
+    // reflect user click in chat
+    addUserMessage(action.label);
+    setActions([]);
+
+    if (action.type === 'tel' && action.payload) {
+      // initiate phone call (mobile/desktop will handle)
+      window.location.href = `tel:${action.payload.replace(/\s+/g, '')}`;
+      addBotMessage('Attempting to place the call... 📞', 200);
+      return;
+    }
+
+    if (action.type === 'mailto' && action.payload) {
+      const mailto = `mailto:${action.payload}`;
+      window.location.href = mailto;
+      addBotMessage('Opening your email client... ✉️', 200);
+      return;
+    }
+
+    if (action.type === 'brochure') {
+      // If we have email, "send" brochure; otherwise ask for email
+      if (userData.email) {
+        addBotMessage(`Sending the brochure to ${userData.email} now. 📧`, 300);
+        await sendToGoogleSheet({ ...userData }); // optional log
+        return;
+      } else {
+        addBotMessage('Please provide your email address so I can send the brochure to you.');
+        setCurrentStep('collectEmailForBrochure');
+        return;
+      }
+    }
+
+    if (action.type === 'book') {
+      // Book demo: ask for phone if not present, otherwise confirm
+      if (userData.phone) {
+        addBotMessage(`Thanks — we will arrange a call/demo with our faculty and reach out on ${userData.phone}. When would you prefer the call?`);
+      } else {
+        addBotMessage('Sure — please share your phone number so we can schedule a call/demo with our faculty.');
+        setCurrentStep('collectPhoneForBooking');
+      }
+      return;
+    }
   };
 
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
     const value = inputValue.trim();
     setInputValue('');
-
+    // clear action buttons when user types
+    setActions([]);
+    
     if (currentStep === 'collectName' || currentStep === 'collectEmail' || currentStep === 'collectPhone') {
       handleUserDataCollection(value);
     } else if (currentStep === 'mainMenu') {
@@ -506,8 +607,32 @@ const LeapfrogWebsite = () => {
                   </div>
                 </div>
               ))}
-              <div ref={messagesEndRef} />
-            </div>
+              {/* Action buttons (call, mail, book, brochure) */}
+              {actions.length > 0 && (
+                <div className="mb-4 flex space-x-2 flex-wrap">
+                  {actions.map(act => (
+                    <button
+                      key={act.id}
+                      onClick={() => {
+                        // handle custom map link separately
+                        if (act.type === 'custom' && act.payload) {
+                          window.open(act.payload, '_blank');
+                          addUserMessage(act.label);
+                          setActions([]);
+                          addBotMessage('Opening map...', 200);
+                          return;
+                        }
+                        handleAction(act);
+                      }}
+                      className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm shadow-sm hover:shadow-md transition"
+                    >
+                      {act.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+               <div ref={messagesEndRef} />
+             </div>
 
             <div className="p-3 sm:p-4 bg-white border-t border-gray-200">
               <div className="flex gap-2">
