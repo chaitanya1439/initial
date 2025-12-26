@@ -5,6 +5,7 @@ interface Message {
   text: string;
   sender: 'bot' | 'user';
   timestamp: Date;
+  videos?: { id: string; title: string }[];
 }
 
 interface UserData {
@@ -85,6 +86,12 @@ const LeapfrogWebsite = () => {
     }
   ];
 
+  const videos = [
+    { id: 'qZiL2u4RM64', title: 'UX/UI Design Course' },
+    { id: '9xfEbMsRgAU', title: 'Graphic Design Course' },
+    { id: 'GQME_zUHJMg', title: 'Web Design Course' }
+  ];
+
   const contactInfo = {
     address: '#304, 4th floor megasri classic, Dwarakapuricolony, Model house lane, Punjagutta, Hyderabad-500 082',
     phone: ['040 40 11 02 22', '+91-988 55 55 166'],
@@ -116,9 +123,9 @@ const LeapfrogWebsite = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const addBotMessage = (text: string, delay = 500) => {
+  const addBotMessage = (text: string, delay = 500, videos?: { id: string; title: string }[]) => {
     setTimeout(() => {
-      setMessages(prev => [...prev, { text, sender: 'bot' as const, timestamp: new Date() }]);
+      setMessages(prev => [...prev, { text, sender: 'bot' as const, timestamp: new Date(), videos }]);
     }, delay);
   };
 
@@ -218,7 +225,7 @@ const LeapfrogWebsite = () => {
       showContactInfo();
     } else if (input === '4' || lowerInput.includes('human')) {
       addUserMessage(input);
-      addBotMessage(`I'll connect you with our team!\n\n📞 ${contactInfo.phone[0]}\n✉️ ${contactInfo.email}`);
+      addBotMessage(`I\'ll connect you with our team!\n\n📞 ${contactInfo.phone[0]}\n✉️ ${contactInfo.email}`);
       setTimeout(() => showMainMenu(), 2000);
     } else if (input === '5' || lowerInput.includes('book') || lowerInput.includes('demo') || lowerInput.includes('faculty')) {
       addUserMessage(input);
@@ -263,7 +270,7 @@ const LeapfrogWebsite = () => {
     else if (query.includes('service')) foundCourse = courses[5];
 
     if (foundCourse) {
-      addBotMessage(`📚 ${foundCourse.name}\n\n${foundCourse.description}\n\n🔗 More details: ${foundCourse.link}`);
+      addBotMessage(`📚 ${foundCourse.name}\n\n${foundCourse.description}\n\n🔗 More details: ${foundCourse.link}`, 500, videos);
       setTimeout(() => showMainMenu(), 2000);
     } else {
       addBotMessage('I couldn\'t find that course. Here are all available courses:');
@@ -598,12 +605,21 @@ const LeapfrogWebsite = () => {
             <div className="flex-1 overflow-y-auto p-3 sm:p-4 bg-gray-50">
               {messages.map((msg, idx) => (
                 <div key={idx} className={`mb-4 flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] sm:max-w-[80%] p-2 sm:p-3 rounded-2xl whitespace-pre-line ${
+                  <div className={`max-w-[85%] sm:max-w-[80%] p-2 sm:p-3 rounded-2xl whitespace-pre-line ${ 
                     msg.sender === 'user'
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-br-none'
                       : 'bg-white text-gray-800 shadow-md rounded-bl-none'
                   }`}>
                     {msg.text}
+                    {msg.videos && (
+                      <div className="mt-2 flex space-x-2">
+                        {msg.videos.map(video => (
+                          <a key={video.id} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer">
+                            <img src={`https://img.youtube.com/vi/${video.id}/0.jpg`} alt={video.title} className="w-24 rounded-lg" />
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
