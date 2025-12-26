@@ -340,7 +340,7 @@ const LeapfrogWebsite = () => {
       <section id="courses" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Courses</h2>
+            <h2 className="text-4xl font-bold mb-4" style={{ color: '#000000' }}>Our Courses</h2>
             <p className="text-xl text-gray-600">Industry-leading design courses for your career</p>
           </div>
 
@@ -348,7 +348,7 @@ const LeapfrogWebsite = () => {
             {courses.map((course) => (
               <div key={course.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition p-8 group">
                 <div className="text-5xl mb-4">{course.icon}</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{course.name}</h3>
+                <h3 className="text-2xl font-bold mb-3" style={{ color: '#000000' }}>{course.name}</h3>
                 <p className="text-gray-600 mb-6">{course.description}</p>
                 <a 
                   href={course.link}
@@ -367,14 +367,14 @@ const LeapfrogWebsite = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Why Choose Leapfrog?</h2>
+              <h2 className="text-4xl font-bold mb-6" style={{ color: '#000000' }}>Why Choose Leapfrog?</h2>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
                     <span className="text-blue-600 font-bold">✓</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg mb-1">Expert Instructors</h3>
+                    <h3 className="font-semibold text-lg mb-1" style={{ color: '#000000' }}>Expert Instructors</h3>
                     <p className="text-gray-600">Learn from industry professionals with years of experience</p>
                   </div>
                 </div>
@@ -383,7 +383,7 @@ const LeapfrogWebsite = () => {
                     <span className="text-blue-600 font-bold">✓</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg mb-1">Hands-on Projects</h3>
+                    <h3 className="font-semibold text-lg mb-1" style={{ color: '#000000' }}>Hands-on Projects</h3>
                     <p className="text-gray-600">Build real-world projects for your portfolio</p>
                   </div>
                 </div>
@@ -392,7 +392,7 @@ const LeapfrogWebsite = () => {
                     <span className="text-blue-600 font-bold">✓</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg mb-1">Career Support</h3>
+                    <h3 className="font-semibold text-lg mb-1" style={{ color: '#000000' }}>Career Support</h3>
                     <p className="text-gray-600">Get placement assistance and career guidance</p>
                   </div>
                 </div>
@@ -401,7 +401,7 @@ const LeapfrogWebsite = () => {
                     <span className="text-blue-600 font-bold">✓</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg mb-1">Flexible Learning</h3>
+                    <h3 className="font-semibold text-lg mb-1" style={{ color: '#000000' }}>Flexible Learning</h3>
                     <p className="text-gray-600">Online and offline training options available</p>
                   </div>
                 </div>
@@ -425,7 +425,7 @@ const LeapfrogWebsite = () => {
       <section id="contact" className="py-20 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Get In Touch</h2>
+            <h2 className="text-4xl font-bold mb-4" style={{ color: '#000000' }}>Get In Touch</h2>
             <p className="text-xl text-gray-600">We're here to help you start your design career</p>
           </div>
 
@@ -434,7 +434,7 @@ const LeapfrogWebsite = () => {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <MapPin size={32} className="text-blue-600" />
               </div>
-              <h3 className="font-bold text-xl mb-3">Visit Us</h3>
+              <h3 className="font-bold text-xl mb-3" style={{ color: '#000000' }}>Visit Us</h3>
               <p className="text-gray-600">{contactInfo.address}</p>
             </div>
 
@@ -442,7 +442,7 @@ const LeapfrogWebsite = () => {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Phone size={32} className="text-blue-600" />
               </div>
-              <h3 className="font-bold text-xl mb-3">Call Us</h3>
+              <h3 className="font-bold text-xl mb-3" style={{ color: '#000000' }}>Call Us</h3>
               {contactInfo.phone.map((phone, idx) => (
                 <p key={idx} className="text-gray-600">{phone}</p>
               ))}
@@ -452,7 +452,7 @@ const LeapfrogWebsite = () => {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail size={32} className="text-blue-600" />
               </div>
-              <h3 className="font-bold text-xl mb-3">Email Us</h3>
+              <h3 className="font-bold text-xl mb-3" style={{ color: '#000000' }}>Email Us</h3>
               <p className="text-gray-600">{contactInfo.email}</p>
             </div>
           </div>
