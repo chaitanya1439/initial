@@ -624,7 +624,7 @@ const LeapfrogWebsite = () => {
                         }
                         handleAction(act);
                       }}
-                      className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm shadow-sm hover:shadow-md transition"
+                      className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm shadow-sm hover:shadow-md transition text-black"
                     >
                       {act.label}
                     </button>
@@ -642,7 +642,7 @@ const LeapfrogWebsite = () => {
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                   placeholder="Type your message..."
-                  className="flex-1 px-4 py-2 sm:py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                  className="flex-1 px-4 py-2 sm:py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-black placeholder-gray-400"
                 />
                 <button
                   onClick={handleSendMessage}
