@@ -467,7 +467,7 @@ const LeapfrogWebsite = () => {
       </footer>
 
       {/* Chatbot */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 right-4 left-4 sm:right-6 sm:left-auto z-50 flex justify-end">
         {!isChatOpen && (
           <button
             onClick={() => setIsChatOpen(true)}
@@ -478,8 +478,8 @@ const LeapfrogWebsite = () => {
         )}
 
         {isChatOpen && (
-          <div className="bg-white rounded-2xl shadow-2xl w-96 h-[600px] flex flex-col overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex justify-between items-center">
+          <div className="bg-white rounded-2xl shadow-2xl w-full sm:w-96 max-w-[calc(100vw-32px)] sm:max-w-none h-[60vh] sm:h-[600px] flex flex-col overflow-hidden mx-auto">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 sm:p-4 flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-xl">L</span>
@@ -494,10 +494,10 @@ const LeapfrogWebsite = () => {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 bg-gray-50">
               {messages.map((msg, idx) => (
                 <div key={idx} className={`mb-4 flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] p-3 rounded-2xl whitespace-pre-line ${
+                  <div className={`max-w-[85%] sm:max-w-[80%] p-2 sm:p-3 rounded-2xl whitespace-pre-line ${
                     msg.sender === 'user'
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-br-none'
                       : 'bg-white text-gray-800 shadow-md rounded-bl-none'
@@ -509,19 +509,19 @@ const LeapfrogWebsite = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 bg-white border-t border-gray-200">
+            <div className="p-3 sm:p-4 bg-white border-t border-gray-200">
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                   placeholder="Type your message..."
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                  className="flex-1 px-4 py-2 sm:py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
                 />
                 <button
                   onClick={handleSendMessage}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full p-3 hover:shadow-lg transition-all duration-300 hover:scale-105"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full p-2 sm:p-3 hover:shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   <Send size={20} />
                 </button>
